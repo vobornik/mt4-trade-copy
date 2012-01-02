@@ -8,7 +8,7 @@ Concept
 The tool consists of two main components (MQL4 EA scripts) - _TradeCopy Master_ and _TradeCopy Slave_.
 
 * **TradeCopy Master** - runs on any chart on an MT4 terminal we want to copy trades from. It writes all necessar info into a file as soon as any change happens (new trade, SL or TP change, close trade, etc.)
-* **TradeCopy Slave** - runs on any chart of MTterminals we want to copy trades to. It reads the status file regurarly and react accordingly as sson as any change occurs.
+* **TradeCopy Slave** - runs on any chart of MT4 terminals we want to copy trades to. It reads the status file regurarly and react accordingly as soon as any change occurs.
 
 MT4 terminal with the _TradeCopty Master_ as well as all terminals with _TradeCopy Slave_ need to run on the same computer (or at least need to share one filesystem). The original idea came from user Николай published in [Automated Trading and Strategy Testing](http://www.mql5.com/en/articles/189) article on mql5.com.
 
