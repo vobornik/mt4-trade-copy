@@ -1,14 +1,14 @@
 Metatrader4 Trade Copy tool
 ===========================
 
-Metatrader4 tool software to copy all trades from one MT4 terminal to one or more terminals - usually connected to other brokers. It uses pure MQL4 language for all the logic. The Windows core kernel32.dll library is used for reading from outside of `experts\files` directory on Windows. On linux (running under Wine) is not necessary, one could make a symbolic (or hard-) link to share one file under different directories.
+Metatrader4 tool software to copy all trades from one MT4 terminal to one or more terminals - usually connected to other brokers. It uses pure MQL4 language for all the logic. The Windows core kernel32.dll library is used for reading from outside of `experts\files` directory on Windows. On Linux (running under Wine) it is not necessary, one could make a symbolic (or hard-) link to share one file under different directories.
 
 Concept
 -----
-The tool consists of two main components (MQL4 EA scripts) - TradeCopy Master and TradeCopy Slave. Both terminals need to run on the same computer (or at least need to share one filesystem).
+The tool consists of two main components (MQL4 EA scripts) - TradeCopy Master and TradeCopy Slave. Both terminals need to run on the same computer (or at least need to share one filesystem). The original idea came from user Николай published in [Automated Trading and Strategy Testing](http://www.mql5.com/en/articles/189) article on mql5.com.
 
-TradeCopy Master - runs on any chart on an MT4 terminal we want to copy trades from.
-TradeCopy Slave - runs on any chart of MTterminals we want to copy trades to.
+* **TradeCopy Master** - runs on any chart on an MT4 terminal we want to copy trades from. It writes all necessar info into a file as soon as any change happens (new trade, SL or TP change, close trade, etc.)
+* **TradeCopy Slave** - runs on any chart of MTterminals we want to copy trades to. It reads the status file regurarly and react accordingly as sson as any change occurs.
 
 Features
 --------
