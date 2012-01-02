@@ -22,13 +22,14 @@ Features
 
 Status
 ------
-Currently under development, first working copy released.
+Currently under development, first working copy tested. The sharing/accessing the same file (TradeCopy.csv) from master and all slaves must be provided on a system level (via link under Linux). Windows users need to wait until a new feature is implemented - read a file outside own subdirectory via kernel32.dll.
 
 TODO
 ----
 
 * Use kernel32.dll on slaves to read from outside of own `\experts\files` directory
 * Handle properly partially closed trades
+* Maybe in the future: Copy trades over the network via 0MQ library (http://www.zeromq.org) - see the idea: http://codebase.mql4.com/7147
 
 Other
 -----
