@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                               TradeCopySlave.mq4 |
+//|                                              TradeCopyMaster.mq4 |
 //|                                                                  |
 //| Copyright (c) 2011,2012 Vaclav Vobornik, Syslog.eu               |
 //|                                                                  |
