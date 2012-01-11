@@ -1,5 +1,5 @@
-Metatrader4 Trade Copy tool
-===========================
+Free MT4 Trade Copier
+=====================
 
 Metatrader4 tool software to copy all trades from one MT4 terminal to one or more terminals - usually connected to other brokers. It uses pure MQL4 language for all the logic. The Windows core kernel32.dll library is used for reading from outside of `experts\files` directory on Windows. On Linux (running under Wine) it is not necessary, one could make a symbolic (or hard-) link to share one file under different directories.
 
