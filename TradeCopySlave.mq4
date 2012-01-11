@@ -24,7 +24,7 @@
 #property link      "http://syslog.eu"
 
 extern string filename="TradeCopy";
-extern double LotKoef=5;
+extern double LotKoef=1;
 extern double ForceLot=0;
 extern int delay=1000;
 extern int magic=20111219;
@@ -50,7 +50,7 @@ string s[];
 int init()
   {
 //----
-   
+   Comment("Waiting for a tick...");
 //----
    return(0);
   }
@@ -82,7 +82,6 @@ int start() {
       cmt=cmt+nl+" [ "+OrdId[i]+" ] [ "+OrdSym[i]+" ] [ "+VerbType(OrdTyp[i])+" ] [ "+OrdLot[i]+" ] [ "+OrdPrice[i]+" ] [ "+OrdSL[i]+" ] [ "+OrdTP[i]+" ]";
     }  
     
-
 // Make sense to make changes only when the market is open and trading allowed
     if(IsTradeAllowed() && IsConnected()) {
       compare_positions();
@@ -275,6 +274,7 @@ void compare_positions() {
         double Price=MarketPrice(i);
         result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],Price,5,0,0,DoubleToStr(OrdId[i],0),magic,0);
         if (result>0) OrderModify(result,OrderOpenPrice(),OrdSL[i],OrdTP[i],0);
+//        else Print ("Open ",OrdSym[i]," failed: ",GetLastError());
       }else{
 // ------ waiting order:
         result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],OrdPrice[i],0,OrdSL[i],OrdTP[i],DoubleToStr(OrdId[i],0),magic,0);
@@ -298,10 +298,10 @@ void compare_positions() {
 
 double MarketPrice(int i ,string typ="open") {
   RefreshRates();
-  if (OrdTyp[i]==0 && typ=="open" || OrdTyp[i]==1 && typ!="open") {
-    return(MarketInfo(OrdSym[i],MODE_ASK));
+  if ((OrdTyp[i]==0 && typ=="open") || (OrdTyp[i]==1 && typ!="open")) {
+    return(NormalizeDouble(MarketInfo(OrdSym[i],MODE_ASK),digits(OrdSym[i])));
   }else{
-    return(MarketInfo(OrdSym[i],MODE_BID));
+    return(NormalizeDouble(MarketInfo(OrdSym[i],MODE_BID),digits(OrdSym[i])));
   }
 }
 
