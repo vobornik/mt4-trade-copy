@@ -20,7 +20,7 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu"
+#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-01-11"
 #property link      "http://syslog.eu"
 
 extern string filename="TradeCopy";
@@ -298,10 +298,19 @@ void compare_positions() {
 
 double MarketPrice(int i ,string typ="open") {
   RefreshRates();
-  if ((OrdTyp[i]==0 && typ=="open") || (OrdTyp[i]==1 && typ!="open")) {
-    return(NormalizeDouble(MarketInfo(OrdSym[i],MODE_ASK),digits(OrdSym[i])));
-  }else{
-    return(NormalizeDouble(MarketInfo(OrdSym[i],MODE_BID),digits(OrdSym[i])));
+  if (typ=="open") {
+    if (OrdTyp[i]==0) {
+      return(NormalizeDouble(MarketInfo(OrdSym[i],MODE_ASK),digits(OrdSym[i])));
+    }else{
+      return(NormalizeDouble(MarketInfo(OrdSym[i],MODE_BID),digits(OrdSym[i])));
+    }
+  }else {
+//close:
+    if (RealOrdTyp[i]==0) {
+      return(NormalizeDouble(MarketInfo(RealOrdSym[i],MODE_ASK),digits(RealOrdSym[i])));
+    }else{
+      return(NormalizeDouble(MarketInfo(RealOrdSym[i],MODE_BID),digits(RealOrdSym[i])));
+    }
   }
 }
 
