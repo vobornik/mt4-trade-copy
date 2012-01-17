@@ -20,7 +20,7 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu"
+#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-01-04"
 #property link      "http://syslog.eu"
 
 int delay=1000;
