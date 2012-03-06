@@ -20,12 +20,12 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-01-11"
+#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-03-06"
 #property link      "http://syslog.eu"
 
 extern string filename="TradeCopy";
-extern double LotKoef=1;
-extern double ForceLot=0;
+extern double LotKoef=0.1;
+extern double ForceLot=0.01;
 extern int delay=1000;
 extern int magic=20111219;
 
@@ -51,6 +51,13 @@ int init()
   {
 //----
    Comment("Waiting for a tick...");
+   Print("Waiting for a tick...");
+   if (IsStopped()) {
+     Print("Is Stopped!!!!!!!!!!!");
+   }
+   if (!IsExpertEnabled()) {
+     Print("Expert Is NOT Enabled!!!!!!!!!!!");
+   }
 //----
    return(0);
   }
@@ -58,6 +65,7 @@ int init()
 //| expert deinitialization function                                 |
 //+------------------------------------------------------------------+
 int deinit()
+
   {
 //----
    
@@ -69,6 +77,7 @@ int deinit()
 //+------------------------------------------------------------------+
 int start() {
 //----
+  Print("Got a tick...");
   while(!IsStopped()) {
     if(!IsExpertEnabled()) break;
     
@@ -267,14 +276,14 @@ void compare_positions() {
       }
     }
     if (!found) {
-      //no position open with this ID, need to open
+      //no position open with this ID, need to open now
       int result;
       if (OrdTyp[i]<2) {
 // ------ market order (check Price and OpenPrice)
         double Price=MarketPrice(i);
         result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],Price,5,0,0,DoubleToStr(OrdId[i],0),magic,0);
         if (result>0) OrderModify(result,OrderOpenPrice(),OrdSL[i],OrdTP[i],0);
-//        else Print ("Open ",OrdSym[i]," failed: ",GetLastError());
+        else Print ("Open ",OrdSym[i]," failed: ",GetLastError());
       }else{
 // ------ waiting order:
         result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],OrdPrice[i],0,OrdSL[i],OrdTP[i],DoubleToStr(OrdId[i],0),magic,0);
@@ -288,7 +297,8 @@ void compare_positions() {
 //      OrderClose(RealOrdId[j],RealOrdLot[j],Price,5,CLR_NONE);
       if (RealOrdTyp[j]<2) {
         Price=MarketPrice(i,"close");
-        OrderClose(RealOrdId[j],RealOrdLot[j],Price,5,CLR_NONE);
+        result=OrderClose(RealOrdId[j],RealOrdLot[j],Price,5,CLR_NONE);
+        if (result<1) Print ("Close ",RealOrdId[j]," / ",RealOrdLot[j]," / ",Price," failed: ",GetLastError());
       }else{
         OrderDelete(RealOrdId[j],CLR_NONE);
       }
@@ -300,16 +310,20 @@ double MarketPrice(int i ,string typ="open") {
   RefreshRates();
   if (typ=="open") {
     if (OrdTyp[i]==0) {
+      Print("Getting Ask open price for buy position...");
       return(NormalizeDouble(MarketInfo(OrdSym[i],MODE_ASK),digits(OrdSym[i])));
     }else{
+      Print("Getting Bid open price for sell position...");
       return(NormalizeDouble(MarketInfo(OrdSym[i],MODE_BID),digits(OrdSym[i])));
     }
   }else {
 //close:
     if (RealOrdTyp[i]==0) {
-      return(NormalizeDouble(MarketInfo(RealOrdSym[i],MODE_ASK),digits(RealOrdSym[i])));
-    }else{
+      Print("Getting Bid close price for buy position...");
       return(NormalizeDouble(MarketInfo(RealOrdSym[i],MODE_BID),digits(RealOrdSym[i])));
+    }else{
+      Print("Getting Ask close price for sell position...");
+      return(NormalizeDouble(MarketInfo(RealOrdSym[i],MODE_ASK),digits(RealOrdSym[i])));
     }
   }
 }
@@ -319,7 +333,7 @@ void real_positions() {
   int i=0;
   for(int cnt=0;cnt<OrdersTotal();cnt++) {
     OrderSelect(cnt, SELECT_BY_POS, MODE_TRADES);
-    if (OrderMagicNumber()==magic) {
+    if (OrderMagicNumber()==magic || ! magic) {
       if (RealSize<i+1)RealResize(i+1);    
       RealOrdId[i]=OrderTicket();
       RealOrdSym[i]=OrderSymbol();
