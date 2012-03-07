@@ -20,7 +20,7 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-03-06"
+#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-03-07"
 #property link      "http://syslog.eu"
 
 extern string filename="TradeCopy";
@@ -28,6 +28,7 @@ extern double LotKoef=0.1;
 extern double ForceLot=0.01;
 extern int delay=1000;
 extern int magic=20111219;
+extern bool CopyDelayedTrades=false;
 
 int start,TickCount;
 int Size=0,RealSize=0,PrevSize=-1;
@@ -286,7 +287,7 @@ void compare_positions() {
         else Print ("Open ",OrdSym[i]," failed: ",GetLastError());
       }else{
 // ------ waiting order:
-        result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],OrdPrice[i],0,OrdSL[i],OrdTP[i],DoubleToStr(OrdId[i],0),magic,0);
+        if (CopyDelayedTrades) result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],OrdPrice[i],0,OrdSL[i],OrdTP[i],DoubleToStr(OrdId[i],0),magic,0);
       }
     }
   }
@@ -296,7 +297,7 @@ void compare_positions() {
 //      Price=MarketPrice(RealOrdSym[j],"close");
 //      OrderClose(RealOrdId[j],RealOrdLot[j],Price,5,CLR_NONE);
       if (RealOrdTyp[j]<2) {
-        Price=MarketPrice(i,"close");
+        Price=MarketPrice(j,"close");
         result=OrderClose(RealOrdId[j],RealOrdLot[j],Price,5,CLR_NONE);
         if (result<1) Print ("Close ",RealOrdId[j]," / ",RealOrdLot[j]," / ",Price," failed: ",GetLastError());
       }else{
