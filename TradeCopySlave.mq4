@@ -20,16 +20,21 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-03-07"
+#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-03-14"
 #property link      "http://syslog.eu"
 
 extern string filename="TradeCopy";
+extern string S1="recalculate Lot by this koeficient:";
 extern double LotKoef=0.1;
+extern string S2="if set, force Lot to this value:";
 extern double ForceLot=0.01;
+extern string S3="is set, use this amount for every 0.01 Lot if higher than calculated above:";
+extern double MicroLotBalance=0;
 extern int delay=1000;
 extern int magic=20111219;
 extern bool CopyDelayedTrades=false;
 
+double Balance=0;
 int start,TickCount;
 int Size=0,RealSize=0,PrevSize=-1;
 int cnt,TotalCounter=-1;
@@ -84,7 +89,7 @@ int start() {
     
     start=GetTickCount();
  
-    cmt=start+nl+"Counter: "+TotalCounter;
+    cmt="TickCount: "+start+nl+"Counter: "+TotalCounter;
 
     load_positions();
 
@@ -193,11 +198,21 @@ void parse_s() {
 
 double LotVol(double lot,string symbol) {
 
-  if (ForceLot != 0) {
+  if (ForceLot > 0) {
     lot=ForceLot;
   }else{
     lot=lot*LotKoef;
   }
+
+  if (Balance<AccountBalance()) Balance=AccountBalance();
+  
+  if (MicroLotBalance > 0) {
+    if (MathFloor(Balance/MicroLotBalance)/100 > lot) {
+      lot=MathFloor(Balance/MicroLotBalance)/100;
+    }
+  }
+//  Print("Calculated lot size: ",lot);
+
   return(NormalizeDouble(lot,DigitsMinLot(symbol)));
 }  
  
@@ -300,6 +315,7 @@ void compare_positions() {
         Price=MarketPrice(j,"close");
         result=OrderClose(RealOrdId[j],RealOrdLot[j],Price,5,CLR_NONE);
         if (result<1) Print ("Close ",RealOrdId[j]," / ",RealOrdLot[j]," / ",Price," failed: ",GetLastError());
+        if (Balance<AccountBalance()) Balance=AccountBalance();
       }else{
         OrderDelete(RealOrdId[j],CLR_NONE);
       }
