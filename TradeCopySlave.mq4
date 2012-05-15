@@ -20,8 +20,9 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-03-14"
+#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-05-01"
 #property link      "http://syslog.eu"
+// 2012-05-01 Prefix and Suffix added
 
 extern string filename="TradeCopy";
 extern string S1="recalculate Lot by this koeficient:";
@@ -33,6 +34,8 @@ extern double MicroLotBalance=0;
 extern int delay=1000;
 extern int magic=20111219;
 extern bool CopyDelayedTrades=false;
+extern string Prefix="";
+extern string Suffix="";
 
 double Balance=0;
 int start,TickCount;
@@ -165,7 +168,7 @@ void parse_s() {
     start=end+1;
     end=StringFind(s[i],",",start);
     length=end-start;
-    OrdSym[i]=StringSubstr(s[i],start,length);
+    OrdSym[i]=Prefix+StringSubstr(s[i],start,length)+Suffix;
    
     start=end+1;
     end=StringFind(s[i],",",start);
