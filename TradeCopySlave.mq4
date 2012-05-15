@@ -20,7 +20,7 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-05-01"
+#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-05-15"
 #property link      "http://syslog.eu"
 // 2012-05-01 Prefix and Suffix added
 
@@ -32,17 +32,20 @@ extern double ForceLot=0.01;
 extern string S3="is set, use this amount for every 0.01 Lot if higher than calculated above:";
 extern double MicroLotBalance=0;
 extern int delay=1000;
+extern double PipsTolerance=5;
 extern int magic=20111219;
-extern bool CopyDelayedTrades=false;
 extern string Prefix="";
 extern string Suffix="";
+extern bool CopyDelayedTrades=false;
 
 double Balance=0;
 int start,TickCount;
 int Size=0,RealSize=0,PrevSize=-1;
 int cnt,TotalCounter=-1;
+int mp=1;
 string cmt;
 string nl="\n";
+
 
 int OrdId[],RealOrdId[];
 string OrdSym[],RealOrdSym[];
@@ -56,20 +59,24 @@ string s[];
 //+------------------------------------------------------------------+
 //| expert initialization function                                   |
 //+------------------------------------------------------------------+
-int init()
-  {
+int init() {
 //----
-   Comment("Waiting for a tick...");
-   Print("Waiting for a tick...");
-   if (IsStopped()) {
-     Print("Is Stopped!!!!!!!!!!!");
-   }
-   if (!IsExpertEnabled()) {
-     Print("Expert Is NOT Enabled!!!!!!!!!!!");
-   }
-//----
-   return(0);
+  Comment("Waiting for a tick...");
+  Print("Waiting for a tick...");
+  if (IsStopped()) {
+    Print("Is Stopped!!!!!!!!!!!");
   }
+  if (!IsExpertEnabled()) {
+    Print("Expert Is NOT Enabled!!!!!!!!!!!");
+  }
+
+  if (Digits == 5 || Digits == 3){    // Adjust for five (5) digit brokers.
+    mp=10;
+  }
+
+//----
+  return(0);
+}
 //+------------------------------------------------------------------+
 //| expert deinitialization function                                 |
 //+------------------------------------------------------------------+
@@ -300,9 +307,15 @@ void compare_positions() {
       if (OrdTyp[i]<2) {
 // ------ market order (check Price and OpenPrice)
         double Price=MarketPrice(i);
-        result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],Price,5,0,0,DoubleToStr(OrdId[i],0),magic,0);
-        if (result>0) OrderModify(result,OrderOpenPrice(),OrdSL[i],OrdTP[i],0);
-        else Print ("Open ",OrdSym[i]," failed: ",GetLastError());
+ 
+// PipsTolerance for Price:
+        if ((OrdTyp[i]==OP_BUY  && Price<OrdPrice[i]+PipsTolerance*mp*Point ) ||
+           (OrdTyp[i]==OP_SELL && Price>OrdPrice[i]-PipsTolerance*mp*Point )) {
+  
+          result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],Price,5,0,0,DoubleToStr(OrdId[i],0),magic,0);
+          if (result>0) OrderModify(result,OrderOpenPrice(),OrdSL[i],OrdTP[i],0);
+          else Print ("Open ",OrdSym[i]," failed: ",GetLastError());
+        }else Print ("Price out of tolerance ",DoubleToStr(OrdId[i],0),": ",OrdPrice[i],"/",Price);
       }else{
 // ------ waiting order:
         if (CopyDelayedTrades) result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],OrdPrice[i],0,OrdSL[i],OrdTP[i],DoubleToStr(OrdId[i],0),magic,0);
