@@ -142,7 +142,7 @@ void load_positions() {
       cnt++;
     }
     FileClose(handle);
-    ArrayResize(s,cnt-1);
+    ArrayResize(s,cnt);
     cmt=cmt+nl+"DEBUG: file end";
     parse_s();
   }else Print("Error opening file ",GetLastError());
