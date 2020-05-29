@@ -20,7 +20,7 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-01-04"
+#property copyright "Copyright Â© 2011, Syslog.eu, rel. 2012-01-04"
 #property link      "http://syslog.eu"
 
 int delay=1000;
@@ -148,7 +148,7 @@ void save_positions() {
   }
 
 
-  int handle=FileOpen("TradeCopy.csv",FILE_CSV|FILE_WRITE,",");
+  int handle=FileOpen("TradeCopy.csv",FILE_CSV|FILE_WRITE|FILE_COMMON,",");
   if(handle>0) {
     FileWrite(handle,TotalCounter);
     TotalCounter++;

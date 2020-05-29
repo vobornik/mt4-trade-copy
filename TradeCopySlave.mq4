@@ -20,7 +20,7 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-05-15"
+#property copyright "Copyright Â© 2011, Syslog.eu, rel. 2012-05-15"
 #property link      "http://syslog.eu"
 // 2012-05-01 Prefix and Suffix added
 
@@ -124,7 +124,7 @@ int start() {
 
 void load_positions() {
 
-  int handle=FileOpen(filename+".csv",FILE_CSV|FILE_READ,";");
+  int handle=FileOpen(filename+".csv",FILE_CSV|FILE_READ|FILE_COMMON,";");
   if(handle>0) {
 
     string line=FileReadString(handle);
@@ -142,7 +142,7 @@ void load_positions() {
       cnt++;
     }
     FileClose(handle);
-    ArrayResize(s,cnt-1);
+    ArrayResize(s,cnt);
     cmt=cmt+nl+"DEBUG: file end";
     parse_s();
   }else Print("Error opening file ",GetLastError());
