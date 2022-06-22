@@ -1,7 +1,7 @@
 //+------------------------------------------------------------------+
 //|                                              TradeCopyMaster.mq4 |
 //|                                                                  |
-//| Copyright (c) 2011,2012 Vaclav Vobornik, Syslog.eu               |
+//| Copyright (c) 2011-2022 Vaclav Vobornik, Syslog.eu               |
 //|                                                                  |
 //| This program is free software: you can redistribute it and/or    |
 //| modify it under the terms of the GNU General Public License      |
@@ -20,7 +20,7 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-01-04"
+#property copyright "Copyright © 2011-2022, Syslog.eu, rel. 2022-06-22"
 #property link      "http://syslog.eu"
 
 int delay=1000;
@@ -42,13 +42,16 @@ double OrdTP[],PrevOrdTP[];
 //+------------------------------------------------------------------+
 //| expert initialization function                                   |
 //+------------------------------------------------------------------+
-int init()
-  {
-//----
-   
-//----
-   return(0);
-  }
+int init()  {
+
+  int handle=FileOpen("TradeCopy.csv",FILE_CSV|FILE_WRITE|FILE_COMMON,",");
+  if(handle>0) {
+    FileClose(handle);
+  }else Print("File open has failed, error: ",GetLastError());
+  
+  return(0);
+}
+
 //+------------------------------------------------------------------+
 //| expert deinitialization function                                 |
 //+------------------------------------------------------------------+
