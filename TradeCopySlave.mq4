@@ -20,13 +20,14 @@
 //|                                                                  |
 //|                                                 http://syslog.eu |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Syslog.eu, rel. 2012-05-15"
+#property copyright "Copyright © 2011-2022, Syslog.eu, rel. 2022-07-15"
 #property link      "http://syslog.eu"
 // 2012-05-01 Prefix and Suffix added
+// 2022-07-15 Possibility to ignore SL and TP 
 
 extern string filename="TradeCopy";
-extern string S1="recalculate Lot by this koeficient:";
-extern double LotKoef=0.1;
+extern string S1="recalculate Lot by this coefficient:";
+extern double LotCoeff=0.1;
 extern string S2="if set, force Lot to this value:";
 extern double ForceLot=0.01;
 extern string S3="is set, use this amount for every 0.01 Lot if higher than calculated above:";
@@ -37,6 +38,7 @@ extern int magic=20111219;
 extern string Prefix="";
 extern string Suffix="";
 extern bool CopyDelayedTrades=false;
+extern bool IgnoreSLTP=false;
 
 double Balance=0;
 int start,TickCount;
@@ -116,7 +118,7 @@ int start() {
     TickCount=GetTickCount()-start;
     if(delay>TickCount)Sleep(delay-TickCount-2);
   }
-  Alert("end, TradeCopy EA stopped");
+//  Alert("end, TradeCopy EA stopped");
   Comment("");
   return(0);
 
@@ -211,7 +213,7 @@ double LotVol(double lot,string symbol) {
   if (ForceLot > 0) {
     lot=ForceLot;
   }else{
-    lot=lot*LotKoef;
+    lot=lot*LotCoeff;
   }
 
   if (Balance<AccountBalance()) Balance=AccountBalance();
@@ -295,7 +297,7 @@ void compare_positions() {
           OrderModify(OrderTicket(),OrdPrice[i],OrderStopLoss(),OrderTakeProfit(),0);
         }
         //compare SL,TP
-        if (OrdTP[i]!=RealOrdTP[j] || OrdSL[i]!=RealOrdSL[j]) {
+        if (IgnoreSLTP==false && (OrdTP[i]!=RealOrdTP[j] || OrdSL[i]!=RealOrdSL[j])) {
           OrderSelect(RealOrdId[j],SELECT_BY_TICKET);
           OrderModify(OrderTicket(),OrderOpenPrice(),OrdSL[i],OrdTP[i],0);
         }
@@ -313,8 +315,9 @@ void compare_positions() {
            (OrdTyp[i]==OP_SELL && Price>OrdPrice[i]-PipsTolerance*mp*Point )) {
   
           result=OrderSend(OrdSym[i],OrdTyp[i],OrdLot[i],Price,5,0,0,DoubleToStr(OrdId[i],0),magic,0);
-          if (result>0) OrderModify(result,OrderOpenPrice(),OrdSL[i],OrdTP[i],0);
-          else Print ("Open ",OrdSym[i]," failed: ",GetLastError());
+          if (result>0) {
+            if (IgnoreSLTP==false) OrderModify(result,OrderOpenPrice(),OrdSL[i],OrdTP[i],0);
+          }else Print ("Open ",OrdSym[i]," failed: ",GetLastError());
         }else Print ("Price out of tolerance ",DoubleToStr(OrdId[i],0),": ",OrdPrice[i],"/",Price);
       }else{
 // ------ waiting order:
