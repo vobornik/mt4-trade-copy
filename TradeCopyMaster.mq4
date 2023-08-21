@@ -46,6 +46,7 @@ int init()  {
 
   int handle=FileOpen("TradeCopy.csv",FILE_CSV|FILE_WRITE|FILE_COMMON,",");
   if(handle>0) {
+    FileWrite(handle,0);
     FileClose(handle);
   }else Print("File open has failed, error: ",GetLastError());
   
